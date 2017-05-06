@@ -141,6 +141,11 @@ open class Cache<T: NSCoding> {
         return objects
     }
 
+    open func allKeys() -> [String] {
+        let urls = try? self.fileManager.contentsOfDirectory(at: self.cacheDirectory, includingPropertiesForKeys: nil, options: [])
+        return urls?.flatMap { $0.deletingPathExtension().lastPathComponent } ?? []
+    }
+
     open func isOnMemory(forKey key: String) -> Bool {
         return cache.object(forKey: key as NSString) != nil
     }
@@ -248,13 +253,7 @@ open class Cache<T: NSCoding> {
         _ = try? self.fileManager.removeItem(at: url)
     }
 
-
     // MARK: Private Helper
-
-    fileprivate func allKeys() -> [String] {
-        let urls = try? self.fileManager.contentsOfDirectory(at: self.cacheDirectory, includingPropertiesForKeys: nil, options: [])
-        return urls?.flatMap { $0.deletingPathExtension().lastPathComponent } ?? []
-    }
 
     fileprivate func urlForKey(_ key: String) -> URL {
         let k = sanitizedKey(key)
